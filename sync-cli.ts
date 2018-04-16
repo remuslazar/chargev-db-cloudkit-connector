@@ -1,28 +1,30 @@
 #!/usr/bin/env ts-node
 
 import * as dotenv from 'dotenv';
-import {CloudKitService} from "./cloudkit/cloudkit.service";
+import {CheckInsSyncManager} from "./cloudkit-connector/checkins-sync-manager";
 
 dotenv.config();
 const argv = require('minimist')(process.argv.slice(2));
 
 const main = async () => {
   try {
-    if (argv['cloudkit']) {
-      const service = new CloudKitService();
-      const userInfo = await service.setup();
 
-      if (!userInfo) {
-        // noinspection ExceptionCaughtLocallyJS
-        throw new Error(`setup CloudKit failed`);
-      }
+    const manager = new CheckInsSyncManager({
+      dryRun: argv['dry-run'],
+      limit: argv.limit ? parseFloat(argv.limit) : undefined,
+      verbose: argv.verbose,
+    });
 
-      console.error(`CloudKit [${process.env.CLOUDKIT_ENV}] Login OK, userRecordName: ${userInfo.userRecordName}`);
+    await manager.init();
+
+    if (argv['download']) {
+      console.log(`# Download new events from chargEV DB and upload them to cloudkit`);
+      await manager.fetchNewEventsFromChargEVDBAndUploadToCloudKit();
     }
 
     process.exit()
   } catch(err) {
-    console.error(err);
+    console.error(err.message);
     process.exit(1)
   }
 };

@@ -11,3 +11,11 @@ export interface CKRecordUpsert {
   created?: CKTimestamp;
   modified?: CKTimestamp;
 }
+
+export interface CKRecord {
+  recordName: string;
+  recordChangeTag: string;
+  deleted: boolean
+  created: CKTimestamp;
+  modified: CKTimestamp;
+}
