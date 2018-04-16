@@ -2,10 +2,10 @@ import {CloudKitService} from "../cloudkit/cloudkit.service";
 import {
   ChargeEventRecord,
   ChargevDBAPIService,
-  CheckInRecord,
+  CheckInRecord, CloudKitCheckInRecord,
   LadelogRecord
 } from "../chargev-db/chargev-db";
-import {allSourcesOtherThanChargEVSource, ChargeEventSource} from "../chargev-db/chargeevent.types";
+import {allSourcesOtherThanChargEVSource, ChargeEventSource, CloudKitCheckIn} from "../chargev-db/chargeevent.types";
 import * as CloudKit from "../cloudkit/vendor/cloudkit";
 import {
   ChargepointInfo,
@@ -221,6 +221,116 @@ export class CheckInsSyncManager {
     }));
 
     console.log(`Processed ${count} record(s).`);
+  }
+
+  private static getCheckInFromCKRecord(record: any): CloudKitCheckIn {
+
+    function getValue(fieldName: string) {
+      if (fieldName in record.fields) {
+        return record.fields[fieldName].value;
+      }
+      return null;
+    }
+
+    return <CloudKitCheckIn>{
+      recordName: record.recordName,
+      recordChangeTag: record.recordChangeTag,
+      created: record.created,
+      modified: record.modified,
+      deleted: record.deleted,
+      source: getValue('source') || ChargeEventSource.cloudKit,
+      timestamp: new Date(getValue('timestamp')),
+      reason: getValue('reason'),
+      comment: getValue('comment'),
+      plug: getValue('plug'),
+      chargepoint: getValue('chargepoint').recordName,
+    };
+  }
+
+  async fetchNewCheckInsFromCloudKitAndUploadThemToChargEVDB() {
+
+    if (this.options.init && !this.options.dryRun) {
+      const response = await this.chargevService.deleteAll();
+      console.log(`${response.deletedRecordCount} record(s) in chargEV DB deleted`);
+    }
+
+    const newestCheckIn = await this.chargevService.getLatest();
+    if (newestCheckIn) {
+      console.log(newestCheckIn);
+    }
+
+    if (newestCheckIn && !(newestCheckIn instanceof CloudKitCheckInRecord)) {
+      throw new Error(`latest CheckIn in chargEV DB is not of expected type`);
+    }
+
+    const newestTimestamp = newestCheckIn ? newestCheckIn.modified.timestamp : 0;
+
+    const query = {
+      recordType: 'CheckIns',
+      filterBy: <any>[],
+      sortBy: [
+        { systemFieldName: "modifiedTimestamp", ascending: true },
+      ],
+    };
+
+    const options = <any>{};
+
+    if (this.options.limit) {
+      options.resultsLimit = this.options.limit;
+    }
+
+    query.filterBy.push({
+      fieldName: "source",
+      comparator: CloudKit.QueryFilterComparator.NOT_IN,
+      fieldValue: { value: allSourcesOtherThanChargEVSource }
+    });
+
+    if (newestTimestamp) {
+      query.filterBy.push({
+        // @see https://forums.developer.apple.com/thread/28126
+        systemFieldName: "modifiedTimestamp",
+        comparator: CloudKit.QueryFilterComparator.GREATER_THAN,
+        fieldValue: { value: newestTimestamp },
+      });
+    }
+
+    const chargeEventsToInsert: CloudKitCheckIn[] = [];
+
+    await this.cloudKitService.find(query, options, async (records: any[]) => {
+      // console.log(JSON.stringify(records, null, 4));
+      let count = 0;
+
+      for (let record of records) {
+        const checkIn = CheckInsSyncManager.getCheckInFromCKRecord(record);
+        chargeEventsToInsert.push(checkIn);
+        count++;
+      }
+
+      if (count) {
+        console.log('Sync CloudKit CheckIns: %d record(s) processed.', count);
+      } else {
+        console.log(`No new CheckIns in CloudKit available for download, nothing to do.`);
+      }
+
+    });
+
+    if (this.options.dryRun) {
+      chargeEventsToInsert.forEach(event => {
+        const eventRecord = new CloudKitCheckInRecord(event);
+        console.log(`[DRY-RUN] will insert ${eventRecord}`);
+        if (this.options.verbose) {
+          console.log(event);
+        }
+      });
+      return chargeEventsToInsert;
+    } else {
+      const response = await this.chargevService.post({
+        recordsToSave: chargeEventsToInsert,
+        // TODO: handle deleted
+        recordIDsToDelete: [],
+      });
+      return response.savedRecords;
+    }
   }
 
   public async printStats() {

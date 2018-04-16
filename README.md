@@ -8,6 +8,14 @@ This connects the [chargEV App](http://ev-freaks.com/chargev) CloudKit Backend t
 
 ### Setup
 
+#### Obtain an auth JWT
+
+Use the chargEV DB API CLI:
+
+```bash
+./api-cli.ts --generate --source 0 --client chargEVApp --type CKCheckIn
+```
+
 #### Setup .env
 
 Create a `.env` file for development:

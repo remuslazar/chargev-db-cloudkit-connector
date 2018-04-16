@@ -23,10 +23,20 @@ const main = async () => {
       await manager.fetchNewEventsFromChargEVDBAndUploadToCloudKit();
     }
 
+    if (argv['upload']) {
+      console.log(`# Fetch new events from chargEV CloudKit Backend and upload them to ChargEV DB`);
+      await manager.fetchNewCheckInsFromCloudKitAndUploadThemToChargEVDB();
+    }
+
     await manager.printStats();
 
   } catch(err) {
-    console.error(err.message);
+    console.error(`ERROR: ${err.message}`);
+
+    if (argv.verbose) {
+      console.error(err);
+    }
+
     process.exit(1)
   }
 };
