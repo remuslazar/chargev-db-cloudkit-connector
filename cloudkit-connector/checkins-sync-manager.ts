@@ -73,14 +73,39 @@ export class CheckInsSyncManager {
     });
   }
 
+  /**
+   * This method will fetch the last change token saved in CloudKit. We will use this
+   * changeToken to perform delta downloads from chargEV DB.
+   *
+   * @returns {Promise<void>}
+   */
+  protected async getChangeToken(): Promise<string|null> {
+    let timestampOfLastInsertedRecord =
+        await this.cloudKitService.getLastTimestampOfSynchronizedRecord(allSourcesOtherThanChargEVSource);
+
+    if (this.options.verbose) {
+      if (timestampOfLastInsertedRecord) {
+        console.log(`Newest timestamp of synchronized CheckIn from local database in CloudKit: ${timestampOfLastInsertedRecord.toISOString()}`);
+      }
+    }
+
+    return timestampOfLastInsertedRecord ? timestampOfLastInsertedRecord.valueOf().toString() : null;
+  }
+
   async fetchNewEventsFromChargEVDBAndUploadToCloudKit() {
 
     if (this.options.init && !this.options.dryRun) {
       this.purgeCheckInsInCloudKitOriginallySynchronizedFromUpstream();
     }
 
+    const changeToken = await this.getChangeToken();
+
+    if (changeToken) {
+      console.log(`using change token: ${changeToken}`);
+    }
+
     let count = 0;
-    await this.chargevService.getAllEvents(null, (events => {
+    await this.chargevService.getAllEvents({changeToken: changeToken, limit: this.options.limit}, (events => {
       events
           // filter out own records
           .filter($0 => $0.source !== ChargeEventSource.cloudKit)

@@ -89,6 +89,13 @@ export interface GetEventsResponse {
   events: ChargeEventRecord[];
 }
 
+export interface GetEventsParams {
+  limit?: number;
+  startToken?: number|null;
+  changeToken?: string|null;
+  changedSince?: Date;
+}
+
 export class ChargevDBAPIService {
 
   constructor(private url: string, private jwtToken: string) { }
@@ -97,17 +104,19 @@ export class ChargevDBAPIService {
    * Performs a single request and fetch a list of records
    *
    * @param {GetEventsResponse} oldResponse
-   * @param {string} changeToken
+   * @param params
    * @returns {Promise<GetEventsResponse>}
    */
-  public async getEvents(oldResponse: GetEventsResponse|null, changeToken: string|null): Promise<GetEventsResponse> {
+  public async getEvents(oldResponse: GetEventsResponse|null, params: GetEventsParams): Promise<GetEventsResponse> {
 
-    const params = {
-      'change-token': changeToken,
-      'start-token': oldResponse ? oldResponse.startToken : undefined,
+    const queryParams = {
+      limit: params.limit,
+      'change-token': params.changeToken,
+      'start-token': oldResponse ? oldResponse.startToken : params.startToken,
+      'changed-since': params.changedSince,
     };
 
-    const response = await this.apiRequest('events', params) as GetEventsResponse;
+    const response = await this.apiRequest('events', queryParams) as GetEventsResponse;
 
     response.events = response.events.map(chargeEventData => {
       return ChargeEventRecord.from(chargeEventData)
@@ -119,16 +128,19 @@ export class ChargevDBAPIService {
   /**
    * Performs multiple calls to fetch all records in batches
    *
-   * @param {string} changeToken
+   * @param params
    * @param cb Callback, called for each batch of records
    * @returns {Promise<null>}
    */
-  public async getAllEvents(changeToken: string|null, cb: ((events: ChargeEventRecord[]) => void)): Promise<undefined> {
-    let response = await this.getEvents(null, changeToken);
+  public async getAllEvents(params: GetEventsParams, cb: ((events: ChargeEventRecord[]) => void)): Promise<undefined> {
+    let response = await this.getEvents(null, params);
     cb(response.events);
 
-    while (response.moreComing) {
-      response = await this.getEvents(response, changeToken);
+    let alreadyProcessedCount = response.events.length;
+
+    while (response.moreComing && (!params.limit || alreadyProcessedCount < params.limit)) {
+      response = await this.getEvents(response, params);
+      alreadyProcessedCount += response.events.length;
       cb(response.events);
     }
 

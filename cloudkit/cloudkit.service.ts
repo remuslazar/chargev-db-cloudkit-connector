@@ -89,4 +89,44 @@ export class CloudKitService {
       }
     }
   }
+
+  /**
+   * Retrieves the latest timestamp of last inserted record for the specified sources
+   *
+   * Note: this query will only filter out own records, inserted via server-to-server auth. Especially
+   * this will not handle any user created records!
+   *
+   * @param {ChargeEventSource[]} sources
+   * @returns {Promise<Date|null>}
+   */
+  async getLastTimestampOfSynchronizedRecord(sources: any[]): Promise<Date|null> {
+    return await this.database.performQuery({
+      recordType: 'CheckIns',
+      filterBy: [
+        {
+          systemFieldName: 'createdUserRecordName',
+          comparator: CloudKit.QueryFilterComparator.EQUALS,
+          fieldValue: {
+            value: {
+              recordName: this.userRecordName,
+            }
+          }
+        },
+        {
+          fieldName: "source",
+          comparator: CloudKit.QueryFilterComparator.IN,
+          fieldValue: { value: sources },
+        }
+      ],
+      sortBy: [
+        {
+          fieldName: "modified",
+          ascending: false
+        }
+      ],
+    }, { resultsLimit: 1 }).then(function (response: any) {
+      return response.records.length && response.records[0].fields.modified ? new Date(response.records[0].fields.modified.value) : null;
+    })
+  };
+
 }
