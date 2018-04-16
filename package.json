@@ -6,7 +6,9 @@
   "scripts": {
     "tsc": "tsc",
     "prestart": "tsc",
-    "postinstall": "npm run install-cloudkit-js ; npm run create-cloudkit-key",
+    "build": "tsc ; cp -a cloudkit/eckey.pem build/cloudkit/eckey.pem ; cp -a strings build/",
+    "ts-node": "ts-node",
+    "postinstall": "npm run install-cloudkit-js ; npm run create-cloudkit-key ; npm run build",
     "test": "echo \"Error: no test specified\" && exit 1",
     "install-cloudkit-js": "mkdir -p cloudkit/vendor ; curl -qs https://cdn.apple-cloudkit.com/ck/1/cloudkit.js > cloudkit/vendor/cloudkit.js",
     "create-cloudkit-key": "test -s cloudkit/eckey.pem || echo \"$CLOUDKIT_PRIVATE_KEY_FILE\" > cloudkit/eckey.pem"

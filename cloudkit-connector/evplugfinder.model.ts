@@ -2,7 +2,7 @@ import {format} from "util";
 import {CKLocation, CKRecord, CKRef, CKTimestamp} from "../cloudkit/cloudkit.types";
 import {ChargeEventSource, Ladelog} from "../chargev-db/chargeevent.types";
 import {Chargelocation} from "../GE/api.interface";
-const goingElectricStrings = require('../strings/goingelectric');
+const goingElectricStrings = require('./../strings/goingelectric');
 
 const Entities = require('html-entities').AllHtmlEntities;
 const entities = new Entities();
@@ -63,7 +63,7 @@ export interface CKChargePointRecord extends CKRecordUpsert {
   };
 }
 
-class CKField<T> {
+export class CKField<T> {
   value: T | number;
   constructor(value: T) {
     // noinspection SuspiciousInstanceOfGuard
