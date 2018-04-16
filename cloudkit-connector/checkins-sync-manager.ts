@@ -244,6 +244,7 @@ export class CheckInsSyncManager {
       comment: getValue('comment'),
       plug: getValue('plug'),
       chargepoint: getValue('chargepoint').recordName,
+      upstreamUpdatedAt: new Date(record.modified.timestamp),
     };
   }
 
@@ -255,15 +256,12 @@ export class CheckInsSyncManager {
     }
 
     const newestCheckIn = await this.chargevService.getLatest();
-    if (newestCheckIn) {
-      console.log(newestCheckIn);
-    }
 
     if (newestCheckIn && !(newestCheckIn instanceof CloudKitCheckInRecord)) {
       throw new Error(`latest CheckIn in chargEV DB is not of expected type`);
     }
 
-    const newestTimestamp = newestCheckIn ? newestCheckIn.modified.timestamp : 0;
+    const newestTimestamp = newestCheckIn && newestCheckIn.upstreamUpdatedAt ? newestCheckIn.upstreamUpdatedAt.valueOf() : 0;
 
     const query = {
       recordType: 'CheckIns',

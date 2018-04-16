@@ -12,6 +12,7 @@ export const allSourcesOtherThanChargEVSource = [
 export interface ChargeEvent {
   id: string;
   updatedAt: Date;
+  upstreamUpdatedAt?: Date;
   source: ChargeEventSource;
   timestamp: Date;
   chargepoint: string; // e.g. chargepoint-0-3358

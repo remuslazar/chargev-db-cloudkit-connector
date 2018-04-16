@@ -14,6 +14,7 @@ export class ChargeEventRecord implements ChargeEvent {
   source: ChargeEventSource;
   timestamp: Date;
   userID: string;
+  upstreamUpdatedAt?: Date;
 
   constructor(json: any) {
     this.id = json.id;
@@ -24,6 +25,7 @@ export class ChargeEventRecord implements ChargeEvent {
     this.source = json.source;
     this.timestamp = new Date(json.timestamp);
     this.userID = json.userID;
+    this.upstreamUpdatedAt = json.upstreamUpdatedAt ? new Date(json.upstreamUpdatedAt) : undefined;
   }
 
   /**
