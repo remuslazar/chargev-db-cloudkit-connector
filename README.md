@@ -21,6 +21,7 @@ Use the chargEV DB API CLI:
 Create a `.env` file for development:
 
 ```
+GE_API_KEY=<here your GoingElectric API Auth Key>
 CHARGEV_DB_API_JWT=<here the chargev-db JWY Auth Key>
 CHARGEV_DB_API_URL=http://localhost:3001/api/v1
 CLOUDKIT_KEY_ID=<here your cloudkit key>
