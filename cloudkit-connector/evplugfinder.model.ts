@@ -1,5 +1,5 @@
 import {format} from "util";
-import {CKLocation, CKRef, CKTimestamp} from "../cloudkit/cloudkit.types";
+import {CKLocation, CKRecord, CKRef, CKTimestamp} from "../cloudkit/cloudkit.types";
 import {ChargeEventSource, Ladelog} from "../chargev-db/chargeevent.types";
 import {Chargelocation} from "../GE/api.interface";
 const goingElectricStrings = require('../strings/goingelectric');
@@ -43,6 +43,12 @@ export interface CKCheckInRecord extends CKRecordUpsert {
     modified: CKField<Date>;
     source?: CKField<ChargeEventSource>;
   };
+}
+
+export interface CKUserRecord extends CKRecord {
+  fields: {
+    nickname?: CKField<string>;
+  }
 }
 
 export interface CKChargePointRecord extends CKRecordUpsert {

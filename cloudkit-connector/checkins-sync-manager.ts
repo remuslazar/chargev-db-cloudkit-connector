@@ -11,7 +11,7 @@ import {
   ChargepointInfo,
   ChargepointRef,
   CKChargePointRecord, CKCheckInFromLadelog,
-  CKCheckInReason, CKCheckInRecord,
+  CKCheckInReason, CKCheckInRecord, CKUserRecord,
   EVPlugFinderRegistry, GEChargepoint
 } from "./evplugfinder.model";
 import {Chargelocation} from "../GE/api.interface";
@@ -248,6 +248,26 @@ export class CheckInsSyncManager {
     };
   }
 
+  protected async fetchUsersFromCloudKit(checkIns: CloudKitCheckIn[]): Promise<CKUserRecord[]> {
+    const allUserRecordNames = new Set(checkIns.map(checkIn => checkIn.modified.userRecordName));
+
+    const users: CKUserRecord[] = [];
+
+    await this.cloudKitService.get(Array.from(allUserRecordNames).map($0 => { return { recordType: 'User', recordName: $0}}),
+        {}, async (records: any[]) => {
+      // console.log(JSON.stringify(records, null, 4));
+      let count = 0;
+      for (let record of records) {
+        const user = record as CKUserRecord;
+        users.push(user);
+        count++;
+      }
+      console.log('Sync CloudKit User Records: %d record(s) processed.', count);
+    });
+
+    return users;
+  }
+
   async fetchNewCheckInsFromCloudKitAndUploadThemToChargEVDB() {
 
     if (this.options.init && !this.options.dryRun) {
@@ -311,6 +331,21 @@ export class CheckInsSyncManager {
       }
 
     });
+
+    // resolve nicknames
+    const allUsers = await this.fetchUsersFromCloudKit(chargeEventsToInsert);
+    // console.log(JSON.stringify(allUsers, null, 4));
+    if (allUsers) {
+      allUsers.forEach(user => {
+        chargeEventsToInsert
+            .filter(chargeEvent => chargeEvent.modified.userRecordName === user.recordName)
+            .forEach(associatecChargeEvent => {
+              if (user.fields.nickname) {
+                associatecChargeEvent.nickname = <string>user.fields.nickname.value;
+              }
+            });
+      });
+    }
 
     if (this.options.dryRun) {
       chargeEventsToInsert.forEach(event => {
