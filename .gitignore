@@ -1,0 +1,8 @@
+node_modules
+*~
+/build
+.idea/workspace.xml
+/cloudkit/vendor
+eckey.pem
+/.env
+/scratchtsconfig.jsontsconfig.json

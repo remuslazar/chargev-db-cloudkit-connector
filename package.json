@@ -4,7 +4,12 @@
   "description": "Connects the chargEV CloudKit Backend with the chargev-db Database",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "tsc": "tsc",
+    "prestart": "tsc",
+    "postinstall": "npm run install-cloudkit-js ; npm run create-cloudkit-key",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install-cloudkit-js": "mkdir -p cloudkit/vendor ; curl -qs https://cdn.apple-cloudkit.com/ck/1/cloudkit.js > cloudkit/vendor/cloudkit.js",
+    "create-cloudkit-key": "test -s cloudkit/eckey.pem || echo \"$CLOUDKIT_PRIVATE_KEY_FILE\" > cloudkit/eckey.pem"
   },
   "repository": {
     "type": "git",
@@ -20,5 +25,19 @@
   "bugs": {
     "url": "https://github.com/remuslazar/chargev-db-cloudkit-connector/issues"
   },
-  "homepage": "https://github.com/remuslazar/chargev-db-cloudkit-connector#readme"
+  "homepage": "https://github.com/remuslazar/chargev-db-cloudkit-connector#readme",
+  "devDependencies": {
+    "@types/dotenv": "^4.0.3",
+    "@types/request": "^2.47.0",
+    "@types/request-promise": "^4.1.41",
+    "typings": "^2.1.1"
+  },
+  "dependencies": {
+    "dotenv": "^5.0.1",
+    "node-fetch": "^2.1.2",
+    "request": "^2.85.0",
+    "request-promise": "^4.2.2",
+    "ts-node": "^5.0.1",
+    "typescript": "^2.8.1"
+  }
 }
