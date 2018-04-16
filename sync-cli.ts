@@ -13,6 +13,7 @@ const main = async () => {
       dryRun: argv['dry-run'],
       limit: argv.limit ? parseFloat(argv.limit) : undefined,
       verbose: argv.verbose,
+      init: argv.init,
     });
 
     await manager.init();
