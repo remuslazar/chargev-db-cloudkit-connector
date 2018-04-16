@@ -23,7 +23,8 @@ const main = async () => {
       await manager.fetchNewEventsFromChargEVDBAndUploadToCloudKit();
     }
 
-    process.exit()
+    await manager.printStats();
+
   } catch(err) {
     console.error(err.message);
     process.exit(1)
@@ -31,7 +32,7 @@ const main = async () => {
 };
 
 main().then(() => {
-
+  process.exit()
 }, err => {
   console.error(err);
 });

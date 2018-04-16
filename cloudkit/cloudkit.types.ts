@@ -19,3 +19,16 @@ export interface CKRecord {
   created: CKTimestamp;
   modified: CKTimestamp;
 }
+
+export interface CKRef {
+  value: {
+    recordName: string;
+    action?: string;
+  };
+  type: string;
+}
+
+export interface CKLocation {
+  latitude: number;
+  longitude: number;
+}

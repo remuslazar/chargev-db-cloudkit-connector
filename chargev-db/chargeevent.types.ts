@@ -10,6 +10,8 @@ export const allSourcesOtherThanChargEVSource = [
 ];
 
 export interface ChargeEvent {
+  id: string;
+  updatedAt: Date;
   source: ChargeEventSource;
   timestamp: Date;
   chargepoint: string; // e.g. chargepoint-0-3358
@@ -23,7 +25,7 @@ export interface CheckIn extends ChargeEvent {
   plug?: string;
 }
 
-export interface CKCheckIn extends CheckIn, CKRecord {}
+export interface CloudKitCheckIn extends CheckIn, CKRecord {}
 
 export interface Ladelog extends ChargeEvent {
   modified: Date;

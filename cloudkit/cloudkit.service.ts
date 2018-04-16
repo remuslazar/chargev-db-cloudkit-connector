@@ -1,6 +1,6 @@
 import {cloudkitContainerConfig} from "./cloudkit.config";
 import * as CloudKit from "./vendor/cloudkit";
-import {CKRecordUpsert} from "./cloudkit.types";
+import {CKRecordUpsert, CKRef} from "./cloudkit.types";
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
@@ -128,5 +128,38 @@ export class CloudKitService {
       return response.records.length && response.records[0].fields.modified ? new Date(response.records[0].fields.modified.value) : null;
     })
   };
+
+  async getLastCheckIn(ref: CKRef) {
+    const response = await this.database.performQuery({
+      recordType: 'CheckIns',
+      filterBy: [
+        {
+          fieldName: "chargepoint",
+          comparator: "EQUALS",
+          fieldValue: ref
+        }
+      ],
+      sortBy: [
+        {
+          fieldName: "timestamp",
+          ascending: false
+        }
+      ]
+    }, { resultsLimit: 1 });
+
+    return response.records.length ? response.records[0] : null;
+  };
+
+  async getChargePoint(chargepointRef: CKRef) {
+    const response = await this.database.fetchRecords(chargepointRef.value.recordName);
+
+    if (response.hasErrors) {
+      //throw response.errors[0];
+      return null;
+    } else {
+      return response.records ? response.records[0] : null;
+    }
+  };
+
 
 }

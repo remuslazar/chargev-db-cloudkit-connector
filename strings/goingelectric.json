@@ -1,0 +1,9 @@
+{
+  "reasonDescription": {
+    "ok": "OK",
+    "recovery": "OK (Störung behoben)",
+    "equipementProblem": "Störung",
+    "equipementProblemNew": "Störung",
+    "default": "Fehlercode %d"
+  }
+}

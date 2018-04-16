@@ -1,10 +1,12 @@
 import request = require('request-promise');
 import {UriOptions} from "request";
 import {RequestPromiseOptions} from "request-promise";
-import {ChargeEvent, ChargeEventSource, CheckIn, CKCheckIn, Ladelog} from "./chargeevent.types";
+import {ChargeEvent, ChargeEventSource, CheckIn, CloudKitCheckIn, Ladelog} from "./chargeevent.types";
 import {CKTimestamp} from "../cloudkit/cloudkit.types";
 
 export class ChargeEventRecord implements ChargeEvent {
+  id: string;
+  updatedAt: Date;
   chargepoint: string;
   comment: string;
   nickname: string;
@@ -13,6 +15,8 @@ export class ChargeEventRecord implements ChargeEvent {
   userID: string;
 
   constructor(json: any) {
+    this.id = json.id;
+    this.updatedAt = new Date(json.updatedAt);
     this.chargepoint = json.chargepoint;
     this.comment = json.comment;
     this.nickname = json.nickname;
@@ -30,7 +34,7 @@ export class ChargeEventRecord implements ChargeEvent {
   static from(json: any): ChargeEventRecord {
     switch(json.__t) {
       case 'CheckIn': return new CheckInRecord(json);
-      case 'CKCheckIn': return new CKCheckInRecord(json);
+      case 'CKCheckIn': return new CloudKitCheckInRecord(json);
       case 'Ladelog': return new LadelogRecord(json);
       default:
         throw new Error(`ChargeEvent of type: ${json.__t} not implemented yet.`);
@@ -51,7 +55,7 @@ export class CheckInRecord extends ChargeEventRecord implements CheckIn {
   }
 }
 
-export class CKCheckInRecord extends CheckInRecord implements CKCheckIn {
+export class CloudKitCheckInRecord extends CheckInRecord implements CloudKitCheckIn {
   created: CKTimestamp;
   deleted: boolean;
   modified: CKTimestamp;
@@ -132,16 +136,16 @@ export class ChargevDBAPIService {
    * @param cb Callback, called for each batch of records
    * @returns {Promise<null>}
    */
-  public async getAllEvents(params: GetEventsParams, cb: ((events: ChargeEventRecord[]) => void)): Promise<undefined> {
+  public async getAllEvents(params: GetEventsParams, cb: ((events: ChargeEventRecord[]) => Promise<void>)): Promise<undefined> {
     let response = await this.getEvents(null, params);
-    cb(response.events);
+    await cb(response.events);
 
     let alreadyProcessedCount = response.events.length;
 
     while (response.moreComing && (!params.limit || alreadyProcessedCount < params.limit)) {
       response = await this.getEvents(response, params);
       alreadyProcessedCount += response.events.length;
-      cb(response.events);
+      await cb(response.events);
     }
 
     return;
