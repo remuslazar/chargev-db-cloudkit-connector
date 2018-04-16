@@ -1,0 +1,24 @@
+{
+  "name": "chargev-db-cloudkit-connector",
+  "version": "1.0.0",
+  "description": "Connects the chargEV CloudKit Backend with the chargev-db Database",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/remuslazar/chargev-db-cloudkit-connector.git"
+  },
+  "keywords": [
+    "chargev",
+    "chargev-db",
+    "evplugfinder"
+  ],
+  "author": "Remus Lazar <remus@lazar.info>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/remuslazar/chargev-db-cloudkit-connector/issues"
+  },
+  "homepage": "https://github.com/remuslazar/chargev-db-cloudkit-connector#readme"
+}
