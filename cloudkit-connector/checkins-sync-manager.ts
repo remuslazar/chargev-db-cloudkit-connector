@@ -328,10 +328,14 @@ export class CheckInsSyncManager {
         console.log('Sync CloudKit CheckIns: %d record(s) processed.', count);
       } else {
         console.log(`No new CheckIns in CloudKit available for download, nothing to do.`);
-        return;
       }
 
     });
+
+    if (chargeEventsToInsert.length === 0) {
+      // skip further processing
+      return;
+    }
 
     // resolve nicknames
     const allUsers = await this.fetchUsersFromCloudKit(chargeEventsToInsert);
