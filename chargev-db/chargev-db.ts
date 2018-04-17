@@ -76,11 +76,9 @@ export class CloudKitCheckInRecord extends CheckInRecord implements CloudKitChec
 }
 export class LadelogRecord extends ChargeEventRecord implements Ladelog {
   isFault: boolean;
-  modified: Date;
   constructor(json: any) {
     super(json);
     this.isFault = json.isFault;
-    this.modified = new Date(json.modified);
   }
   public toString() {
     return `GE Ladelog [isFault=${this.isFault}] for ${this.chargepoint} timestamp ${this.timestamp}`;

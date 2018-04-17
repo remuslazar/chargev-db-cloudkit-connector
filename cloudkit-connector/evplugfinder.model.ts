@@ -136,7 +136,7 @@ export class CKCheckInFromLadelog implements CKCheckInRecord {
     this.fields = {
       source: new CKField(ChargeEventSource.goingElectric),
       chargepoint: new ChargepointRef(ladelog.chargepoint),
-      timestamp: new CKField(ladelog.modified),
+      timestamp: new CKField(ladelog.timestamp),
       modified: new CKField(ladelog.updatedAt),
       comment: new CKField(entities.decode(ladelog.comment)),
       reason: new CKField(ladelog.isFault ? CKCheckInReason.equipementProblem : CKCheckInReason.ok),

@@ -29,6 +29,5 @@ export interface CheckIn extends ChargeEvent {
 export interface CloudKitCheckIn extends CheckIn, CKRecord {}
 
 export interface Ladelog extends ChargeEvent {
-  modified: Date;
   isFault: boolean;
 }
