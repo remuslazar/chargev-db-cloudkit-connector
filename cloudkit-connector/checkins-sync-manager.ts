@@ -328,6 +328,7 @@ export class CheckInsSyncManager {
         console.log('Sync CloudKit CheckIns: %d record(s) processed.', count);
       } else {
         console.log(`No new CheckIns in CloudKit available for download, nothing to do.`);
+        return;
       }
 
     });
@@ -355,14 +356,12 @@ export class CheckInsSyncManager {
           console.log(event);
         }
       });
-      return chargeEventsToInsert;
     } else {
-      const response = await this.chargevService.post({
+      await this.chargevService.post({
         recordsToSave: chargeEventsToInsert,
         // TODO: handle deleted
         recordIDsToDelete: [],
       });
-      return response.savedRecords;
     }
   }
 
