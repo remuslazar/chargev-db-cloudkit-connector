@@ -1,6 +1,6 @@
 {
   "name": "chargev-db-cloudkit-connector",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "Connects the chargEV CloudKit Backend with the chargev-db Database",
   "main": "index.js",
   "scripts": {
