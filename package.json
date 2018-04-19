@@ -8,9 +8,8 @@
     "prestart": "tsc",
     "build": "tsc ; cp -a cloudkit/eckey.pem build/cloudkit/eckey.pem ; cp -a strings build/",
     "ts-node": "ts-node",
-    "postinstall": "npm run install-cloudkit-js ; npm run create-cloudkit-key ; npm run build",
+    "postinstall": "npm run create-cloudkit-key ; npm run build",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "install-cloudkit-js": "mkdir -p cloudkit/vendor ; curl -qs https://cdn.apple-cloudkit.com/ck/1/cloudkit.js > cloudkit/vendor/cloudkit.js",
     "create-cloudkit-key": "test -s cloudkit/eckey.pem || echo \"$CLOUDKIT_PRIVATE_KEY_FILE\" > cloudkit/eckey.pem"
   },
   "repository": {
@@ -42,6 +41,7 @@
     "request": "^2.85.0",
     "request-promise": "^4.2.2",
     "ts-node": "^5.0.1",
+    "tsl-apple-cloudkit": "^0.2.14",
     "typescript": "^2.8.1"
   }
 }

@@ -6,7 +6,7 @@ import {
   LadelogRecord
 } from "../chargev-db/chargev-db";
 import {allSourcesOtherThanChargEVSource, ChargeEventSource, CloudKitCheckIn} from "../chargev-db/chargeevent.types";
-import * as CloudKit from "../cloudkit/vendor/cloudkit";
+import * as CloudKit from 'tsl-apple-cloudkit';
 import {
   ChargepointInfo,
   ChargepointRef,

@@ -1,5 +1,5 @@
 import {cloudkitContainerConfig} from "./cloudkit.config";
-import * as CloudKit from "./vendor/cloudkit";
+import * as CloudKit from 'tsl-apple-cloudkit';
 import {CKRecordUpsert, CKRef} from "./cloudkit.types";
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
@@ -16,7 +16,7 @@ export class CloudKitService {
     const fetch = require('node-fetch');
 
     //CloudKit configuration
-    CloudKit.configure({
+    const cloudkit = CloudKit.configure({
       services: {
         fetch: fetch,
         // logger: console,
@@ -24,7 +24,7 @@ export class CloudKitService {
       containers: [ cloudkitContainerConfig ]
     });
 
-    this.container = CloudKit.getDefaultContainer();
+    this.container = cloudkit.getDefaultContainer();
     this.database = this.container.publicCloudDatabase; // We'll only make calls to the public database.
 
     const userInfo = await this.container.setUpAuth();
@@ -135,8 +135,8 @@ export class CloudKitService {
       filterBy: [
         {
           fieldName: "chargepoint",
-          comparator: "EQUALS",
-          fieldValue: ref
+          comparator: CloudKit.QueryFilterComparator.EQUALS,
+          fieldValue: <any>ref
         }
       ],
       sortBy: [
@@ -151,7 +151,7 @@ export class CloudKitService {
   };
 
   async getChargePoint(chargepointRef: CKRef) {
-    const response = await this.database.fetchRecords(chargepointRef.value.recordName);
+    const response = await this.database.fetchRecords([chargepointRef.value.recordName]);
 
     if (response.hasErrors) {
       //throw response.errors[0];
