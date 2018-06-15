@@ -16,6 +16,10 @@ const main = async () => {
 
     await manager.init();
 
+    if (argv.refs) {
+      await manager.populateReferencesField();
+    }
+
   } catch(err) {
     console.error(`ERROR: ${err.message}`);
 

@@ -1,6 +1,7 @@
 import {cloudkitContainerConfig} from "./cloudkit.config";
 import * as CloudKit from 'tsl-apple-cloudkit';
 import {CKRecordUpsert, CKRef} from "./cloudkit.types";
+import {Database, Query, RecordFetchOptions} from "tsl-apple-cloudkit";
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
@@ -31,6 +32,10 @@ export class CloudKitService {
     this.userRecordName = userInfo.userRecordName;
     return userInfo;
   };
+
+  getPublicDatabase(): Database {
+    return this.database;
+  }
 
   async saveRecords(records: CKRecordUpsert[]) {
     return this.database.saveRecords(records);
