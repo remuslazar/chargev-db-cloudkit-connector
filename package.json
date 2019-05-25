@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/remuslazar/chargev-db-cloudkit-connector.git"
+    "url": "git+https://github.com/ev-freaks/chargev-db-cloudkit-connector.git"
   },
   "keywords": [
     "chargev",
@@ -24,24 +24,23 @@
   "author": "Remus Lazar <remus@lazar.info>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/remuslazar/chargev-db-cloudkit-connector/issues"
+    "url": "https://github.com/ev-freaks/chargev-db-cloudkit-connector/issues"
   },
-  "homepage": "https://github.com/remuslazar/chargev-db-cloudkit-connector#readme",
+  "homepage": "https://github.com/ev-freaks/chargev-db-cloudkit-connector#readme",
   "devDependencies": {
-    "@types/dotenv": "^4.0.3",
-    "@types/request": "^2.47.0",
-    "@types/request-promise": "^4.1.41",
-    "typings": "^2.1.1"
+    "@types/dotenv": "^6.1.1",
+    "@types/request": "^2.48.1",
+    "@types/request-promise": "^4.1.44"
   },
   "dependencies": {
-    "dotenv": "^5.0.1",
+    "dotenv": "^7.0.0",
     "html-entities": "^1.2.1",
-    "node-fetch": "^2.1.2",
-    "node-object-hash": "^1.3.0",
-    "request": "^2.85.0",
-    "request-promise": "^4.2.2",
+    "node-fetch": "^2.6.0",
+    "node-object-hash": "^1.4.2",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4",
     "ts-node": "^5.0.1",
     "tsl-apple-cloudkit": "^0.2.14",
-    "typescript": "^2.8.1"
+    "typescript": "^2.9.2"
   }
 }
